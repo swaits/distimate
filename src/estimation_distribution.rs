@@ -167,7 +167,7 @@ pub trait EstimationDistribution:
     /// use approx::assert_relative_eq;
     ///
     /// let pert = Pert::new(1.0, 2.0, 3.0).unwrap();
-    /// assert_relative_eq!(pert.probability_of_completion(2.5), 0.8436, epsilon = 1e-4);
+    /// assert_relative_eq!(pert.probability_of_completion(2.5), 0.89648, epsilon = 1e-4);
     /// ```
     fn probability_of_completion(&self, estimate: f64) -> f64 {
         self.cdf(estimate)

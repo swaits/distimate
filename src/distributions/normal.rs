@@ -12,7 +12,7 @@
 //! use distimate::Normal;
 //! use approx::assert_relative_eq;
 //!
-//! let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+//! let normal = Normal::new(1.0, 3.0).unwrap();
 //! assert_eq!(normal.mode(), 2.0);
 //! assert_relative_eq!(normal.mean().unwrap(), 2.0, epsilon = 1e-6);
 //! ```
@@ -33,7 +33,7 @@ use statrs::distribution::Normal as StatrsNormal;
 /// use distimate::Normal;
 /// use approx::assert_relative_eq;
 ///
-/// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+/// let normal = Normal::new(1.0, 3.0).unwrap();
 /// assert_eq!(normal.min(), 1.0);
 /// assert_eq!(normal.mode(), 2.0);
 /// assert_eq!(normal.max(), 3.0);
@@ -52,8 +52,9 @@ impl Normal {
     /// # Arguments
     ///
     /// * `min` - The minimum value of the distribution
-    /// * `likely` - The most likely value (mode) of the distribution
     /// * `max` - The maximum value of the distribution
+    ///
+    /// Note that the `likely` value is implied as the center of the distribution.
     ///
     /// # Returns
     ///
@@ -64,27 +65,23 @@ impl Normal {
     ///
     /// Returns an error if:
     /// - `min` is greater than or equal to `max`
-    /// - `likely` is less than `min` or greater than `max`
-    ///
     /// # Examples
     ///
     /// ```
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_eq!(normal.min(), 1.0);
     /// assert_eq!(normal.mode(), 2.0);
     /// assert_eq!(normal.max(), 3.0);
     /// ```
-    pub fn new(min: f64, likely: f64, max: f64) -> Result<Self> {
+    pub fn new(min: f64, max: f64) -> Result<Self> {
         if min >= max {
             return Err(Error::InvalidRange { min, max });
         }
-        if likely < min || likely > max {
-            return Err(Error::InvalidMode { min, likely, max });
-        }
 
+        let likely = (min + max) / 2.0;
         let mean = likely;
         let std_dev = (max - min) / 6.0; // Assuming 99.7% of values fall within the range
 
@@ -119,7 +116,7 @@ impl Normal {
 /// use distimate::prelude::*;
 /// use distimate::Normal;
 ///
-/// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+/// let normal = Normal::new(1.0, 3.0).unwrap();
 /// // The Normal distribution can now be used in contexts requiring an EstimationDistribution
 /// ```
 impl EstimationDistribution for Normal {}
@@ -150,7 +147,7 @@ impl Distribution<f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_eq!(normal.mean(), Some(2.0));
     /// ```
     fn mean(&self) -> Option<f64> {
@@ -172,7 +169,7 @@ impl Distribution<f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_eq!(normal.variance().unwrap(), 0.1111111111111111); // (1/3)^2
     /// ```
     fn variance(&self) -> Option<f64> {
@@ -193,7 +190,7 @@ impl Distribution<f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_eq!(normal.skewness(), Some(0.0));
     /// ```
     fn skewness(&self) -> Option<f64> {
@@ -216,7 +213,7 @@ impl Distribution<f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert!(normal.entropy().is_some());
     /// ```
     fn entropy(&self) -> Option<f64> {
@@ -246,7 +243,7 @@ impl Median<f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_eq!(normal.median(), 2.0);
     /// ```
     ///
@@ -282,7 +279,7 @@ impl Mode<f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_eq!(normal.mode(), 2.0);
     /// ```
     ///
@@ -321,7 +318,7 @@ impl Continuous<f64, f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert!(normal.pdf(2.0) > 0.0);
     /// assert_eq!(normal.pdf(0.0), 0.0); // Outside the distribution's range
     /// ```
@@ -353,7 +350,7 @@ impl Continuous<f64, f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert!(normal.ln_pdf(2.0).is_finite());
     /// assert_eq!(normal.ln_pdf(0.0), f64::NEG_INFINITY); // Outside the distribution's range
     /// ```
@@ -393,7 +390,7 @@ impl ContinuousCDF<f64, f64> for Normal {
     /// use distimate::Normal;
     /// use approx::assert_relative_eq;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_relative_eq!(normal.cdf(2.0), 0.5, epsilon = 1e-6);
     /// assert_eq!(normal.cdf(0.0), 0.0); // Below minimum
     /// assert_eq!(normal.cdf(4.0), 1.0); // Above maximum
@@ -431,7 +428,7 @@ impl ContinuousCDF<f64, f64> for Normal {
     /// use distimate::Normal;
     /// use approx::assert_relative_eq;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_relative_eq!(normal.inverse_cdf(0.5), 2.0, epsilon = 1e-6);
     /// assert_eq!(normal.inverse_cdf(0.0), 1.0); // Clamped to minimum
     /// assert_eq!(normal.inverse_cdf(1.0), 3.0); // Clamped to maximum
@@ -463,7 +460,7 @@ impl Min<f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_eq!(normal.min(), 1.0);
     /// ```
     ///
@@ -500,7 +497,7 @@ impl Max<f64> for Normal {
     /// use distimate::prelude::*;
     /// use distimate::Normal;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// assert_eq!(normal.max(), 3.0);
     /// ```
     ///
@@ -544,7 +541,7 @@ impl RandDistribution<f64> for Normal {
     /// use distimate::Normal;
     /// use rand::prelude::*;
     ///
-    /// let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+    /// let normal = Normal::new(1.0, 3.0).unwrap();
     /// let mut rng = StdRng::seed_from_u64(42);  // For reproducibility
     ///
     /// let sample = normal.sample(&mut rng);
@@ -573,7 +570,7 @@ mod tests {
 
     #[test]
     fn test_new() {
-        let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+        let normal = Normal::new(1.0, 3.0).unwrap();
         assert_eq!(normal.min(), 1.0);
         assert_eq!(normal.mode(), 2.0);
         assert_eq!(normal.max(), 3.0);
@@ -583,14 +580,12 @@ mod tests {
 
     #[test]
     fn test_invalid_parameters() {
-        assert!(Normal::new(3.0, 2.0, 1.0).is_err()); // min > max
-        assert!(Normal::new(1.0, 0.5, 3.0).is_err()); // likely < min
-        assert!(Normal::new(1.0, 3.5, 3.0).is_err()); // likely > max
+        assert!(Normal::new(3.0, 1.0).is_err()); // min > max
     }
 
     #[test]
     fn test_pdf() {
-        let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+        let normal = Normal::new(1.0, 3.0).unwrap();
         assert_relative_eq!(normal.pdf(2.0), normal.inner.pdf(2.0), epsilon = 1e-6);
         assert_eq!(normal.pdf(0.5), 0.0); // Below min
         assert_eq!(normal.pdf(3.5), 0.0); // Above max
@@ -598,7 +593,7 @@ mod tests {
 
     #[test]
     fn test_cdf() {
-        let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+        let normal = Normal::new(1.0, 3.0).unwrap();
         assert_relative_eq!(normal.cdf(2.0), 0.5, epsilon = 1e-6);
         assert_eq!(normal.cdf(0.5), 0.0); // Below min
         assert_eq!(normal.cdf(3.5), 1.0); // Above max
@@ -606,7 +601,7 @@ mod tests {
 
     #[test]
     fn test_inverse_cdf() {
-        let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+        let normal = Normal::new(1.0, 3.0).unwrap();
         assert_relative_eq!(normal.inverse_cdf(0.5), 2.0, epsilon = 1e-6);
         assert_eq!(normal.inverse_cdf(0.0), 1.0); // Clamped to min
         assert_eq!(normal.inverse_cdf(1.0), 3.0); // Clamped to max
@@ -614,7 +609,7 @@ mod tests {
 
     #[test]
     fn test_sampling() {
-        let normal = Normal::new(1.0, 2.0, 3.0).unwrap();
+        let normal = Normal::new(1.0, 3.0).unwrap();
         let mut rng = StdRng::seed_from_u64(42);
         let samples: Vec<f64> = (0..1000).map(|_| normal.sample(&mut rng)).collect();
 
@@ -633,7 +628,7 @@ mod tests {
         ];
 
         for (min, likely, max) in test_cases {
-            let normal = Normal::new(min, likely, max).unwrap();
+            let normal = Normal::new(min, max).unwrap();
             let n = 100_000; // Number of samples
             let mut rng = StdRng::seed_from_u64(42); // Fixed seed for reproducibility
 
