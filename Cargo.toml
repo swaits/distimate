@@ -1,6 +1,6 @@
 [package]
 name = "distimate"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 authors = ["Stephen Waits <steve@waits.net>"]
 description = "A crate providing probability distributions for estimation and risk analysis"
