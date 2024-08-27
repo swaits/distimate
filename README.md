@@ -32,10 +32,20 @@ use distimate::prelude::*;
 use distimate::Pert;
 
 fn main() {
-    let pert = Pert::new(1.0, 2.0, 3.0).unwrap();
-    println!("Mean: {}", pert.mean().unwrap());
-    println!("Variance: {}", pert.variance().unwrap());
-    println!("95th percentile: {}", pert.inverse_cdf(0.95));
+    // Create a PERT distribution for a task estimated to take
+    // between 1 and 3 days, most likely 2 days
+    let task_duration = Pert::new(1.0, 2.0, 3.0).unwrap();
+
+    println!("Expected duration: {:.2} days", task_duration.expected_value());
+    println!("Optimistic estimate (P5): {:.2} days", task_duration.optimistic_estimate());
+    println!("Pessimistic estimate (P95): {:.2} days", task_duration.pessimistic_estimate());
+    println!("Probability of completing within 2.5 days: {:.2}%",
+             task_duration.probability_of_completion(2.5) * 100.0);
+    println!("Risk of exceeding 2.5 days: {:.2}%",
+             task_duration.risk_of_overrun(2.5) * 100.0);
+
+    let (lower, upper) = task_duration.confidence_interval(0.9);
+    println!("90% Confidence Interval: {:.2} to {:.2} days", lower, upper);
 }
 ```
 

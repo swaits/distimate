@@ -142,6 +142,33 @@ pub trait EstimationDistribution:
         self.std_dev().unwrap()
     }
 
+    /// Calculates the probability of completing a task or project by a given estimate.
+    ///
+    /// This method computes the probability that the actual value will be less than or equal to
+    /// the provided estimate. It's particularly useful in project management and risk analysis
+    /// to quantify the likelihood of meeting deadlines or budget targets.
+    ///
+    /// The probability of completion is equivalent to the cumulative distribution function (CDF)
+    /// evaluated at the given estimate.
+    ///
+    /// # Arguments
+    ///
+    /// * `estimate` - The point estimate to evaluate the probability against.
+    ///
+    /// # Returns
+    ///
+    /// A float between 0 and 1 representing the probability of completing by the given estimate.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use distimate::prelude::*;
+    /// use distimate::Pert;
+    /// use approx::assert_relative_eq;
+    ///
+    /// let pert = Pert::new(1.0, 2.0, 3.0).unwrap();
+    /// assert_relative_eq!(pert.probability_of_completion(2.5), 0.8436, epsilon = 1e-4);
+    /// ```
     fn probability_of_completion(&self, estimate: f64) -> f64 {
         self.cdf(estimate)
     }
