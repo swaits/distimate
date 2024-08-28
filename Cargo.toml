@@ -1,6 +1,6 @@
 [package]
 name = "distimate"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["Stephen Waits <steve@waits.net>"]
 description = "A crate providing probability distributions for estimation and risk analysis"
@@ -10,6 +10,7 @@ documentation = "https://docs.rs/distimate"
 readme = "README.md"
 keywords = ["probability", "estimation", "risk-analysis", "monte-carlo", "pert"]
 categories = ["mathematics", "science", "simulation"]
+rust-version = "1.64"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
